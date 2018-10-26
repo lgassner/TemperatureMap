@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+    </style>
+  </head>
+  <body>
+    <h3>My Google Maps Demo</h3>
+    <!--The div element for the map -->
+    <div id="map"></div>
+    <script>
+// Initialize and add the map
+function initMap() {
+  // The location of Uluru
+  var uluru = {lat: -25.344, lng: 131.036};
+  
+  var contentString = 
+	"<html>" +
+  	"<head>" +
+  	"<script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"><\/script>" +
+	"<script type=\"text/javascript\">" +
+  	"google.charts.load('current', {'packages':['corechart']});" +
+  	"google.charts.setOnLoadCallback(drawChart);" +
+  	"function drawChart() {" +
+  		"var data = google.visualization.arrayToDataTable([" +
+  		"['Year', 'Sales', 'Expenses']," +
+		"['2004',  1000,      400]," +
+		"['2005',  1170,      460]," +
+		"['2006',  660,       1120]," +
+		"['2007',  1030,      540]" +
+		"]);" +
+	"var options = {" +
+			"title: 'Company Performance'," +
+			"curveType: 'function'," +
+			"legend: { position: 'bottom' }" +
+	"};" +
+	"var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));" +
+	"chart.draw(data, options);" +
+	"}" +
+  	"<\/script>" +
+	"</head>" +
+	  "<body>" +
+	    "<div id=\"curve_chart\" style=\"width: 250px; height: 100px\"></div>" +
+	  "</body>" +
+	"</html>";
+  	
+  var infowindow = new google.maps.InfoWindow({
+	    content: contentString
+	  });
+  
+  // The map, centered at Uluru
+  var map = new google.maps.Map(
+      document.getElementById('map'), {zoom: 4, center: uluru});
+  // The marker, positioned at Uluru
+  var marker = new google.maps.Marker({position: uluru, map: map});
+  marker.addListener('click',function(){
+	  infowindow.open(map, marker);
+  })
+}
+    </script>
+    <!--Load the API from the specified URL
+    * The async attribute allows the browser to render the page while the API loads
+    * The key parameter will contain your own API key (which is not needed for this tutorial)
+    * The callback parameter executes the initMap() function
+    -->
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNLeTGKNKKTKP-aveAOoipn1qsgTiFO3U&callback=initMap">
+    </script>
+  </body>
+</html>
