@@ -11,8 +11,8 @@ public abstract class Sensor {
 	/**
 	 * @param: Unique ID, Latitude, Longitude
 	*/
-	public Sensor(int uniqueID, double latitude, double longitude, boolean simulated) {
-		ID = uniqueID;
+	public Sensor(double latitude, double longitude, boolean simulated) {
+		ID = Double.toString(latitude).hashCode() + Double.toString(longitude).hashCode();
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.simulated = simulated;

@@ -28,6 +28,8 @@ public class VirtualSensor extends Sensor {
 	String csvSplitBy = ";";
 	String line;
 	BufferedReader br;
+	DateTimeFormatter formatter;
+	DateTimeFormatter ISOformatter;
 	
 	ArrayList<Double> temps;
 	ArrayList<LocalDateTime> dates;
@@ -35,16 +37,17 @@ public class VirtualSensor extends Sensor {
 	
 	/**
 	 * 
-	 * @param uniqueID
 	 * @param latitude
 	 * @param longitude
 	 * @param offset
 	 */
-	public VirtualSensor(int uniqueID, double latitude, double longitude, double offset){
-		super(uniqueID, latitude, longitude, true);
+	public VirtualSensor(double latitude, double longitude, double offset){
+		super(latitude, longitude, true);
 		
 		temps = new ArrayList<>();
 		dates = new ArrayList<>();
+		formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+		ISOformatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 		
 		try {
 			br = new BufferedReader(new FileReader(csvFile));
@@ -53,7 +56,6 @@ public class VirtualSensor extends Sensor {
 			while((line = br.readLine()) != null) {
 				String[] data = line.split(csvSplitBy);
 				temps.add(new Double(data[3])+offset);
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 				dates.add(LocalDateTime.parse(data[0], formatter));
 			}
 			
@@ -82,7 +84,7 @@ public class VirtualSensor extends Sensor {
 	}
 	
 	// Attention: run this method always together with getTemp (and before it) for consistency
-	public LocalDateTime getDateTime() {
-		return dates.get(i);
+	public String getDateTime() {
+		return dates.get(i).format(ISOformatter);
 	}
 }
