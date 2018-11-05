@@ -9,92 +9,111 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
-public class DBConnection {
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-	final static private String localhost = "http://localhost:64000/PutSensorData";
-	final static private String realURL = "http://temperature-map.appspot.com/PutSensorData";
+public class DBConnection implements Runnable {
+
+	final private String localhost = "http://localhost:64000/PutSensorData";
+	final private String realURL = "http://temperature-map.appspot.com/PutSensorData";
+	final private String password = "0pen5esame";
+	private String latitude;
+	private String longitude;
+	private boolean stop = false;
+	private boolean simulated;
+	private JTextField valueField;
+	private JTextField timeField;
+	private JTextArea textArea;
 	
-	// start with latitude, longitude
-	public static void main(String[] args) {
+	private double temp;
+	private String dateTime;
 	
-		String password = "0pen5esame";
-		String latitude = args[0];
-		String longitude = args[1];
+	private Sensor sensor;
+	
+	public DBConnection(String latitude, String longitude, boolean simulated,JTextField valueField, JTextField timeField, JTextArea textArea) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.simulated = simulated;
+		this.textArea = textArea;
+		this.valueField = valueField;
+		this.timeField = timeField;		
 		
-		// TODO: use real sensor
-		
-		VirtualSensor sensor = new VirtualSensor(Double.parseDouble(latitude),Double.parseDouble(longitude),0);
-		int i = 0;
-		
-		while(true) {
+		if(simulated) {
+			sensor = new VirtualSensor(Double.parseDouble(latitude),Double.parseDouble(longitude),0); 
+		} else {
+			// TODO: use real sensor
+			sensor = null;
+		}
+	}
+
+	@Override
+	public void run() {
 			
-			if(sensor.getSimulated()) {
-				i++;
-				if(i > 1) {
-					break;
-				}
-			} else {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		while(!stop) {
+			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				textArea.setText(e.getMessage());
 			}
+			
+			dateTime = sensor.getDateTime();
+			temp = sensor.getTemp();
 			
 			String data = "Password=" + password;
 			data += "&ID=" + Integer.toString(sensor.getID());
 			data += "&Latitude=" + latitude;
 			data += "&Longitude=" + longitude;
 			data += "&Simulated=" + Boolean.toString(sensor.getSimulated());
-			data += "&DateTime=" + sensor.getDateTime();
-			data += "&Temperature=" + Double.toString(sensor.getTemp());
+			data += "&DateTime=" + dateTime;
+			data += "&Temperature=" + Double.toString(temp);
+			
+			valueField.setText(Double.toString(temp));
+			timeField.setText(dateTime);
 
 			URL url = null;
 			try {
 				url = new URL(localhost);
+				//TODO: use real URL
 				//url = new URL(realURL);
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				textArea.setText(e.getMessage());
 			}
 
 			HttpURLConnection con = null;
 			try {
 				con = (HttpURLConnection) url.openConnection();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				textArea.setText(e.getMessage());
 			}
 
 			try {
 				con.setRequestMethod("POST");
 			} catch (ProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				textArea.setText(e.getMessage());
 			}
 			con.setDoOutput(true);
 			try {
 				con.connect();
 				con.getOutputStream().write(data.getBytes("UTF-8"));
 				BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				textArea.setText("");
 				String line;
 				while ((line = reader.readLine()) != null) {
-					System.out.println(line);
+					textArea.append(line);
 				}
 				reader.close();
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				textArea.setText(e.getMessage());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				textArea.setText(e.getMessage());
 			}
 		}
-	    
-	    
 		
-		
+	}
+
+	public void setStop() {
+		stop = true;
 	}
 	
 	

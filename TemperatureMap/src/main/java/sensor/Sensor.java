@@ -35,5 +35,7 @@ public abstract class Sensor {
 	public boolean getSimulated() {
 		return simulated;
 	}
+
+	protected abstract String getDateTime();
 	
 }
