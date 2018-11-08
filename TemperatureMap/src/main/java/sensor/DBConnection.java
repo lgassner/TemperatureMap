@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 
 public class DBConnection implements Runnable {
 
-	final private String localhost = "http://localhost:64000/PutSensorData";
+	final private String localhost = "http://localhost:63000/PutSensorData";
 	final private String realURL = "http://temperature-map.appspot.com/PutSensorData";
 	final private String password = "0pen5esame";
 	private String latitude;
