@@ -33,12 +33,14 @@ public class MapServlet extends HttpServlet {
 		 Query q = new Query("TempSensor");
 		 q.addProjection(new PropertyProjection("Latitude", Double.class));
 		 q.addProjection(new PropertyProjection("Longitude", Double.class));
+		 q.addProjection(new PropertyProjection("SensorID", Long.class));
 		 q.setDistinct(true);
 		 PreparedQuery pq = ds.prepare(q);
 		 
 		 ArrayList<String> locationvars = new ArrayList<>();
 		 ArrayList<Double> latitudes = new ArrayList<>();
 		 ArrayList<Double> longitudes = new ArrayList<>();
+		 ArrayList<Long> ids = new ArrayList<>();
 		 ArrayList<String> markervars = new ArrayList<>();
 		 
 		 int i = 0;
@@ -46,6 +48,7 @@ public class MapServlet extends HttpServlet {
 			 locationvars.add("location" + i);
 			 latitudes.add((double) result.getProperty("Latitude"));
 			 longitudes.add((double) result.getProperty("Longitude"));
+			 ids.add((long)result.getProperty("SensorID"));
 			 markervars.add("marker" + i++);
 		 }
 		    
@@ -95,7 +98,7 @@ public class MapServlet extends HttpServlet {
 	    			
 	    			response.getWriter().println(insertLine);
 	    			insertLine = "drawChart(";
-	    			insertLine += i;
+	    			insertLine += ids.get(i);
 	    			insertLine += ");});";
 	    			
 	    			response.getWriter().println(insertLine);

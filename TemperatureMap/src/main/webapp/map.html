@@ -2,6 +2,8 @@
 <html>
   <head>
     	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <style>
        /* Set the size of the div element that contains the map */
       #map {
@@ -26,20 +28,26 @@ function initMap() {
   
 	var contentString = document.getElementById("curve_chart");
 	
-	//
   	google.charts.load('current', {'packages':['corechart']});
   	//google.charts.setOnLoadCallback(drawChart);
   	//TODO: input data via JSON
-  	function drawChart(sensorID) {
-  		var data = google.visualization.arrayToDataTable([
-  		['Year', 'Sales', 'Expenses'],
-		['2004',  1000,      400],
-		['2005',  1170,      460],
-		['2006',  660,       1120],
-		['2007',  1030,      sensorID*500]
-		]);
+   	function drawChart(sensorID) {
+//   		var data = google.visualization.arrayToDataTable([
+//   		['Year', 'Sales', 'Expenses'],
+// 		['2004',  1000,      400],
+// 		['2005',  1170,      460],
+// 		['2006',  660,       1120],
+// 		['2007',  1030,      sensorID*500]
+// 		]);
+
+	var jsonData = $.ajax({
+		url: "GetSensorData?ID=" + sensorID,
+		dataType: "json",
+		async: false
+	}).responseText;
+	
 	var options = {
-			title: 'Company Performance',
+			title: 'Temperature',
 			curveType: 'function',
 			legend: { position: 'bottom' }
 	};
