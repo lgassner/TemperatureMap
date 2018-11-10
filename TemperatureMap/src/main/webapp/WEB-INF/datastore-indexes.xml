@@ -5,7 +5,9 @@
     <!-- Used 1 time in query history -->
     <datastore-index kind="TempSensor" ancestor="false" source="auto">
         <property name="Latitude" direction="asc"/>
-        <property name="Longitude" direction="asc"/>
+        <property name="Longitude" direction="asc"/><property
+        	name="DateTime" direction="asc"></property>
+    	<property name="SensorID" direction="asc"></property>
     </datastore-index>
 
 </datastore-indexes>

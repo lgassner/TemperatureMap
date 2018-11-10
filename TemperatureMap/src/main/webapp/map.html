@@ -2,7 +2,6 @@
 <html>
   <head>
     	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <style>
        /* Set the size of the div element that contains the map */
@@ -17,11 +16,10 @@
     <!--The div element for the map -->
     <div id="map"></div>
     <div id="data"></div>
-    <div id="curve_chart" style="width: 250px; height: 100px"></div>
+    <div id="curve_chart" style="width: 600px; height: 150px"></div>
     <script>
 // Initialize and add the map
 function initMap() {
-  // The location of Uluru
   
 //markerplace
 //here the markerlocations are inserted
@@ -29,17 +27,8 @@ function initMap() {
 	var contentString = document.getElementById("curve_chart");
 	
   	google.charts.load('current', {'packages':['corechart']});
-  	//google.charts.setOnLoadCallback(drawChart);
-  	//TODO: input data via JSON
-   	function drawChart(sensorID) {
-//   		var data = google.visualization.arrayToDataTable([
-//   		['Year', 'Sales', 'Expenses'],
-// 		['2004',  1000,      400],
-// 		['2005',  1170,      460],
-// 		['2006',  660,       1120],
-// 		['2007',  1030,      sensorID*500]
-// 		]);
 
+  	function drawChart(sensorID) {
 	var jsonData = $.ajax({
 		url: "GetSensorData?ID=" + sensorID,
 		dataType: "json",
@@ -51,9 +40,12 @@ function initMap() {
 			curveType: 'function',
 			legend: { position: 'bottom' }
 	};
+	
+	var data = new google.visualization.DataTable(jsonData);
+	
 	var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
 	chart.draw(data, options);
-	}
+  	}
   	//
 
   var infowindow = new google.maps.InfoWindow({
@@ -61,7 +53,7 @@ function initMap() {
 	  });
   
 //mapplace
-//here the 
+//here the servlet inserts the dynamic Markers
 
 }
 
