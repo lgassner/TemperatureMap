@@ -9,13 +9,14 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class DBConnection implements Runnable {
 
 	final private String localhost = "http://localhost:64000/PutSensorData";
-	final private String realURL = "http://temperature-map.appspot.com/PutSensorData";
+	final private String realURL = "https://temperature-map.appspot.com/PutSensorData";
 	final private String password = "0pen5esame";
 	private String latitude;
 	private String longitude;
@@ -73,16 +74,22 @@ public class DBConnection implements Runnable {
 
 			URL url = null;
 			try {
-				//url = new URL(localhost);
+				url = new URL(localhost);
 				//TODO: use real URL
-				url = new URL(realURL);
+				//url = new URL(realURL);
 			} catch (MalformedURLException e) {
 				textArea.setText(e.getMessage());
 			}
-
+			
+			// use for localhost
 			HttpURLConnection con = null;
+			// use for real URL
+			// HttpsURLConnection con = null;
 			try {
+				// use for localhost
 				con = (HttpURLConnection) url.openConnection();
+				// use for real URL
+				// con = (HttpsURLConnection) url.openConnection();
 			} catch (IOException e) {
 				textArea.setText(e.getMessage());
 			}
@@ -109,7 +116,6 @@ public class DBConnection implements Runnable {
 				textArea.setText(e.getMessage());
 			}
 		}
-		
 	}
 
 	public void setStop() {

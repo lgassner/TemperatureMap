@@ -29,14 +29,17 @@ public class GetSensorData extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
-		System.out.println(request.getParameter("ID"));
+		// debug
+		// System.out.println(request.getParameter("ID"));
 		
+		// query datastore for ordered list of clicked sensor
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query("TempSensor");
 		q.addFilter("SensorID", FilterOperator.EQUAL, Long.parseLong(request.getParameter("ID")));
 		q.addSort("DateTime");
 		PreparedQuery pq = ds.prepare(q);
 		
+		// put results in Array Lists
 		ArrayList<LocalDateTime> dateTimes = new ArrayList<>();
 		ArrayList<Double> temps = new ArrayList<>();
 		
@@ -47,8 +50,7 @@ public class GetSensorData extends HttpServlet {
 			 temps.add((double) result.getProperty("Temperature"));
 		 }
 		 
-		
-		
+		// generate JSON response
 		String string = "{\"cols\":[";
 		
 		// generate cols of data table
@@ -80,9 +82,7 @@ public class GetSensorData extends HttpServlet {
 		LocalDateTime checkDate;
 		
 		// debug
-		System.out.println(currentTime.minusWeeks(1).isAfter(dateTimes.get(lastIndex-1)));
-		
-		// -debug
+		// System.out.println(currentTime.minusWeeks(1).isAfter(dateTimes.get(lastIndex-1)));
 		
 		int i = dateTimes.size()-2;
 		while(i>=0) {
@@ -91,7 +91,8 @@ public class GetSensorData extends HttpServlet {
 			if(!hourDone) {
 				if(currentTime.minusHours(1).isBefore(checkDate)) {
 					averageHour += temps.get(i);
-					System.out.println("add hour");
+					// debug
+					// System.out.println("add hour");
 				} else {
 					averageHour /= (lastIndex - i);
 					hourDone = true;
@@ -101,7 +102,8 @@ public class GetSensorData extends HttpServlet {
 			if(!dayDone) {
 				if(currentTime.minusDays(1).isBefore(checkDate)) {
 					averageDay += temps.get(i);
-					System.out.println("add day");
+					// debug
+					// System.out.println("add day");
 				} else {
 					averageDay /= (lastIndex - i);
 					dayDone = true;
@@ -111,11 +113,16 @@ public class GetSensorData extends HttpServlet {
 			if(!weekDone) {
 				if(!weekDone && currentTime.minusWeeks(1).isBefore(checkDate)) {
 					averageWeek += temps.get(i);
-					System.out.println("add week");
+					// debug
+					// System.out.println("add week");
 				} else {
 					averageWeek /= (lastIndex - i);
 					weekDone = true;
 				}
+			}
+			
+			if(hourDone && dayDone && weekDone) {
+				break;
 			}
 			
 			i--;
@@ -123,19 +130,19 @@ public class GetSensorData extends HttpServlet {
 		}
 		
 		if(!hourDone) {
-			averageHour /= lastIndex;
+			averageHour /= (lastIndex + 1);
 		}
 		
 		if(!dayDone) {
-			averageDay /= lastIndex;
+			averageDay /= (lastIndex + 1);
 		}
 		
 		if(!weekDone) {
-			averageWeek /= lastIndex;
+			averageWeek /= (lastIndex + 1);
 		}
 		
-		// show only the last ten measurements
-		i = temps.size() - 10;
+		// show only the last 24 measurements
+		i = temps.size() - 24;
 		if(i < 0) {
 			i = 0;
 		}
@@ -175,8 +182,8 @@ public class GetSensorData extends HttpServlet {
 		string += "]}";
 		
 		response.getWriter().print(string);
-		System.out.println(string);
-
+		// debug
+		// System.out.println(string);
 
 		 
 	}

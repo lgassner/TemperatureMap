@@ -23,7 +23,8 @@ public class PutSensorData extends HttpServlet {
 	  public void doPost(HttpServletRequest request, HttpServletResponse response) 
 	      throws IOException {
 
-		System.out.println("I'm in POST");
+		// debug
+		// System.out.println("I'm in POST");
 		
 		response.setContentType("text/plain");
 	    response.setCharacterEncoding("UTF-8");

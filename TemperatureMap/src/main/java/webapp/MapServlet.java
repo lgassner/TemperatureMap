@@ -55,13 +55,14 @@ public class MapServlet extends HttpServlet {
 	    response.setContentType("text/html");
 	    response.setCharacterEncoding("UTF-8");
 
-	    // generate map page
+	    // generate map page from template
 	    FileReader fr = new FileReader("map.html");
 	    BufferedReader br = new BufferedReader(fr);
 	    
 	    String line;
 	    String insertLine;
 	    
+	    // add markers & their listeners
 	    while((line = br.readLine()) != null) {
 	    	if(line.equals("//markerplace")) {
 	    		 for(i = 0; i<locationvars.size(); i++) {
