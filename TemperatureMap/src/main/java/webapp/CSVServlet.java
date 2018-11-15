@@ -86,8 +86,9 @@ public class CSVServlet extends HttpServlet {
 				 os.write(byteRead);
 			 }
 			 os.flush();
+			 
 		 } catch (Exception excp) {
-			 excp.printStackTrace();
+			 // swallow
 		 } finally {
 			 os.close();
 			 bFis.close();
