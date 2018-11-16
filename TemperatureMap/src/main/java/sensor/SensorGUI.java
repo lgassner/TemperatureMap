@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -49,6 +51,13 @@ public class SensorGUI extends JFrame {
             }
         });
 		
+		 // shutdown hook
+        addWindowListener (new WindowAdapter() {
+                public void windowClosing(WindowEvent w) {
+                    quit();
+                }
+            });
+		
 		// Latitude Panel
 		JPanel latitudePanel = new JPanel(new BorderLayout());
         latitudeLabel.setPreferredSize (new Dimension (150, 28));
@@ -74,7 +83,7 @@ public class SensorGUI extends JFrame {
         simulatedPanel.add (simulatedCheckBox, BorderLayout.CENTER);
         simulatedPanel.setBorder (new EmptyBorder (2, 2, 2, 2));
         
-        // combine the tree above parts
+        // combine the three above parts
         JPanel inputPanel = new JPanel (new GridLayout (3, 1));
         inputPanel.add (latitudePanel);
         inputPanel.add (longitudePanel);
@@ -136,6 +145,12 @@ public class SensorGUI extends JFrame {
         
 	}
 	
+	private void quit() {
+		connection.setStop();
+		System.exit(0);
+		
+	}
+	
 	private void startStop() {
 		if(started) {
 			connection.setStop();
@@ -163,7 +178,9 @@ public class SensorGUI extends JFrame {
 	
 	public static void main (String argv[]) {
         new SensorGUI ();
+          
     } 
+	
 	
 	
 

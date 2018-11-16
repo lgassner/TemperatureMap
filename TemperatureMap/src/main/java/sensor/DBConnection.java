@@ -18,6 +18,8 @@ public class DBConnection implements Runnable {
 	final private String localhost = "http://localhost:63000/PutSensorData";
 	final private String realURL = "https://temperature-map.appspot.com/PutSensorData";
 	final private String password = "0pen5esame";
+	final private int uploadtime = 10000; // [ms]
+	
 	private String latitude;
 	private String longitude;
 	private boolean stop = false;
@@ -50,12 +52,18 @@ public class DBConnection implements Runnable {
 		while(!stop) {
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(uploadtime);
 			} catch (InterruptedException e) {
 				textArea.setText(e.getMessage());
 			}
 			
 			dateTime = sensor.getDateTime();
+			
+			// no sensor value yet
+			if(dateTime == null) {
+				continue;
+			}
+			
 			temp = sensor.getTemp();
 			
 			String data = "Password=" + password;
@@ -71,8 +79,9 @@ public class DBConnection implements Runnable {
 
 			URL url = null;
 			try {
-				//url = new URL(localhost);
-				//TODO: use real URL
+				// use for localhost
+				// url = new URL(localhost);
+				// use for real URL
 				url = new URL(realURL);
 			} catch (MalformedURLException e) {
 				textArea.setText(e.getMessage());
@@ -81,12 +90,12 @@ public class DBConnection implements Runnable {
 			// use for localhost
 			//HttpURLConnection con = null;
 			// use for real URL
-			 HttpsURLConnection con = null;
+			HttpsURLConnection con = null;
 			try {
 				// use for localhost
-				//con = (HttpURLConnection) url.openConnection();
+				// con = (HttpURLConnection) url.openConnection();
 				// use for real URL
-				 con = (HttpsURLConnection) url.openConnection();
+				con = (HttpsURLConnection) url.openConnection();
 			} catch (IOException e) {
 				textArea.setText(e.getMessage());
 			}

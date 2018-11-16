@@ -22,6 +22,7 @@ public class RealSensor extends Sensor {
 	double temp;
 	String dateTime;
 	SerialPort port;
+	PortReader pr;
 	
 	public RealSensor(double latitude, double longitude) {
 		super(latitude, longitude, false);
@@ -31,7 +32,8 @@ public class RealSensor extends Sensor {
 		try {
 			port.openPort();
 			port.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-			port.addEventListener(new PortReader(port, this), SerialPort.MASK_RXCHAR);
+			pr = new PortReader(port, this);
+			port.addEventListener(pr, SerialPort.MASK_RXCHAR);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -59,7 +61,9 @@ public class RealSensor extends Sensor {
 		try {
 			port.closePort();
 		} catch (SerialPortException e) {
-			e.printStackTrace();
+			// swallow
+		} finally {
+			pr = null;
 		}
 	}
 	

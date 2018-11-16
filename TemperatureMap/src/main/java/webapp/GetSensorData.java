@@ -1,6 +1,7 @@
 package webapp;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -71,52 +71,51 @@ public class GetSensorData extends HttpServlet {
 		int lastIndex = dateTimes.size()-1;
 		
 		// get aggregated values
-		double averageWeek = temps.get(lastIndex);
+		LocalDateTime currentTime = dateTimes.get(lastIndex);
+		
+		// initialize values
+		double averageWeek = 0;
 		boolean weekDone = false;
-		double averageDay= temps.get(lastIndex);
+		double averageDay = 0;
 		boolean dayDone = false;
-		double averageHour= temps.get(lastIndex);
+		double averageHour = 0;
 		boolean hourDone = false;
 		
-		LocalDateTime currentTime = dateTimes.get(lastIndex);
 		LocalDateTime checkDate;
 		
 		// debug
 		// System.out.println(currentTime.minusWeeks(1).isAfter(dateTimes.get(lastIndex-1)));
 		
+		// calculate average values via discrete integral (trapez approximation)
 		int i = dateTimes.size()-2;
+		double area;
+		Duration duration;
 		while(i>=0) {
 			checkDate = dateTimes.get(i);
+			duration = Duration.between(checkDate, dateTimes.get(i+1));
+			area = (temps.get(i) + temps.get(i+1))/2 * (duration.getSeconds() + duration.getNano() * Math.pow(10,-9));
+			duration = Duration.between(checkDate, currentTime);
 			
 			if(!hourDone) {
-				if(currentTime.minusHours(1).isBefore(checkDate)) {
-					averageHour += temps.get(i);
-					// debug
-					// System.out.println("add hour");
-				} else {
-					averageHour /= (lastIndex - i);
+				averageHour += area;
+				if(currentTime.minusHours(1).isAfter(checkDate)) {
+					averageHour /= (duration.getSeconds() + duration.getNano() * Math.pow(10, -9));
 					hourDone = true;
 				}
 			}
 			
 			if(!dayDone) {
-				if(currentTime.minusDays(1).isBefore(checkDate)) {
-					averageDay += temps.get(i);
-					// debug
-					// System.out.println("add day");
-				} else {
-					averageDay /= (lastIndex - i);
+				averageDay += area;
+				if(currentTime.minusDays(1).isAfter(checkDate)) {
+					averageDay /= (duration.getSeconds() + duration.getNano() * Math.pow(10, -9));
 					dayDone = true;
 				}
 			}
 			
 			if(!weekDone) {
-				if(!weekDone && currentTime.minusWeeks(1).isBefore(checkDate)) {
-					averageWeek += temps.get(i);
-					// debug
-					// System.out.println("add week");
-				} else {
-					averageWeek /= (lastIndex - i);
+				averageWeek += area;
+				if(currentTime.minusWeeks(1).isAfter(checkDate)) {
+					averageWeek /= (duration.getSeconds() + duration.getNano() * Math.pow(10, -9));
 					weekDone = true;
 				}
 			}
@@ -129,16 +128,19 @@ public class GetSensorData extends HttpServlet {
 			
 		}
 		
-		if(!hourDone) {
-			averageHour /= (lastIndex + 1);
+		// use full range if measurement period wasn't long enough
+		duration = Duration.between(dateTimes.get(0), currentTime);
+		double fullTime = duration.getSeconds() + duration.getNano() * Math.pow(10, -9);
+		if(!hourDone) {	
+			averageHour /= fullTime;
 		}
 		
 		if(!dayDone) {
-			averageDay /= (lastIndex + 1);
+			averageDay /= fullTime;
 		}
 		
 		if(!weekDone) {
-			averageWeek /= (lastIndex + 1);
+			averageWeek /= fullTime;
 		}
 		
 		// show only the last 24 measurements
