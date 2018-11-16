@@ -23,6 +23,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/lukgas00/Desktop/Private/Studium/InI_III_P/jssc-2.8.0.jar"/>
+	<classpathentry kind="lib" path="//fs003/stud/lgassner/Desktop/jSSC-2.6.0-Release/jssc.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

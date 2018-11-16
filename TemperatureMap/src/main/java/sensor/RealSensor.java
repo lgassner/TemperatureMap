@@ -1,9 +1,6 @@
 package sensor;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
