@@ -38,29 +38,30 @@ function initMap() {
 	
   	google.charts.load('current', {'packages':['corechart']});
 
-  	function drawChart(sensorID) {
-	var jsonData = $.ajax({
-		url: "GetSensorData?ID=" + sensorID,
-		dataType: "json",
-		async: false
-	}).responseText;
-	
-	var options = {
-			title: 'Temperature of sensor: ' + sensorID,
-			curveType: 'function',
-			vAxis: {title: 'Temperature [C]'},
-			hAxis: {title: 'Date & Time'},
-			legend: { position: 'bottom' }
-	};
-	
-	var data = new google.visualization.DataTable(jsonData);
-	
-	var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-	chart.draw(data, options);
-	
-	var csvLink = document.getElementById("csv_single");
-	csvLink.innerHTML = "get CSV for this sensor";
-	csvLink.href = "/csv?ID=" + sensorID;
+	function drawChart(sensorID) {
+		
+		var jsonData = $.ajax({
+			url: "GetSensorData?ID=" + sensorID,
+			dataType: "json",
+			async: false
+		}).responseText;
+		
+		var options = {
+				title: 'Temperature of sensor: ' + sensorID,
+				curveType: 'function',
+				vAxis: {title: 'Temperature [C]'},
+				hAxis: {title: 'Date & Time'},
+				legend: { position: 'bottom' }
+		};
+		
+		var data = new google.visualization.DataTable(jsonData);
+		
+		var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+		chart.draw(data, options);
+		
+		var csvLink = document.getElementById("csv_single");
+		csvLink.innerHTML = "get CSV for this sensor";
+		csvLink.href = "/csv?ID=" + sensorID;
 	
   	}
   	//
