@@ -91,7 +91,7 @@ class PortReader implements SerialPortEventListener {
                 	// get temperature out of reply
                 	index = first.indexOf(" ");
                 	String temp = first.substring(index + 1, first.length()-2);
-                	// set temperature and it's time
+                	// set temperature and its time
                 	sensor.setTemp(Double.parseDouble(temp));
                 	sensor.setDateTime(Instant.now().toString());
                 }
