@@ -1,0 +1,18 @@
+<!-- Indices written at Sun, 11 Nov 2018 06:25:38 CET -->
+
+<datastore-indexes autoGenerate="true">
+
+	<!-- Used 1 time in query history -->
+	<datastore-index kind="TempSensor" ancestor="false" source="auto">
+		<property name="Latitude" direction="asc" />
+		<property name="Longitude" direction="asc" />
+		<property name="SensorID" direction="asc" />
+	</datastore-index>
+
+	<!-- Used 1 time in query history -->
+	<datastore-index kind="TempSensor" ancestor="false" source="auto">
+		<property name="SensorID" direction="asc" />
+		<property name="DateTime" direction="asc" />
+	</datastore-index>
+
+</datastore-indexes>

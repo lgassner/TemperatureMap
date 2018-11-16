@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	
+	
+  <head>
+    	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 800px;  /* The height is 800 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+       #csv {text-decoration: none;}
+    </style>
+  </head>
+  <body>
+    <h3>Welcome to my Temperature Map</h3>
+    <!--The div element for the map -->
+    <div id="map"></div>
+    <!-- Below elements are invisible on the main page but are used as infowindow or button -->
+    <div id="infowindow">
+    		<div id="curve_chart" style="width: 650px; height: 300px"></div>
+    	<p>
+    		<a id="csv_single" href=""></a>
+    	</p>
+    </div>
+    <a id="csv" href='/csv'></a>
+    <script>
+    
+// Initialize and add the map
+function initMap() {
+  
+//markerplace
+//here the markerlocations are inserted
+  
+	var contentString = document.getElementById("infowindow");
+	
+  	google.charts.load('current', {'packages':['corechart']});
+
+	function drawChart(sensorID) {
+		
+		var jsonData = $.ajax({
+			url: "GetSensorData?ID=" + sensorID,
+			dataType: "json",
+			async: false
+		}).responseText;
+		
+		var options = {
+				title: 'Temperature of sensor: ' + sensorID,
+				curveType: 'function',
+				vAxis: {title: 'Temperature [C]'},
+				hAxis: {title: 'Date & Time'},
+				legend: { position: 'bottom' }
+		};
+		
+		var data = new google.visualization.DataTable(jsonData);
+		
+		var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+		chart.draw(data, options);
+		
+		var csvLink = document.getElementById("csv_single");
+		csvLink.innerHTML = "get CSV for this sensor";
+		csvLink.href = "/csv?ID=" + sensorID;
+	
+  	}
+  	//
+
+  var infowindow = new google.maps.InfoWindow({
+	    content: contentString
+	  });
+  
+//mapplace
+//here the servlet inserts the dynamic Markers
+
+	// generate CSV Export Button
+	var csvControlDiv = document.getElementById('csv');
+	var csvControl = new CSVControl(csvControlDiv, map);
+	csvControlDiv.index = 1;
+	map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(csvControlDiv);
+}
+
+function CSVControl(controlDiv, map) {
+
+	  // Set CSS for the control border.
+	  var controlUI = document.createElement('div');
+	  controlUI.style.backgroundColor = '#fff';
+	  controlUI.style.border = '2px solid #fff';
+	  controlUI.style.borderRadius = '3px';
+	  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+	  controlUI.style.cursor = 'pointer';
+	  controlUI.style.marginBottom = '22px';
+	  controlUI.style.textAlign = 'center';
+	  controlUI.title = 'Click to get the full data as *.csv file';
+	  controlDiv.appendChild(controlUI);
+
+	  // Set CSS for the control interior.
+	  var controlText = document.createElement('div');
+	  controlText.style.color = 'rgb(25,25,25)';
+	  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+	  controlText.style.fontSize = '16px';
+	  controlText.style.lineHeight = '38px';
+	  controlText.style.paddingLeft = '5px';
+	  controlText.style.paddingRight = '5px';
+	  controlText.innerHTML = 'CSV Export';
+	  controlUI.appendChild(controlText);
+
+	}
+
+    </script>
+    <!--Load the API from the specified URL
+    * The async attribute allows the browser to render the page while the API loads
+    * The key parameter will contain your own API key (which is not needed for this tutorial)
+    * The callback parameter executes the initMap() function
+    -->
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNLeTGKNKKTKP-aveAOoipn1qsgTiFO3U&callback=initMap">
+    </script>
+  </body>
+</html>
