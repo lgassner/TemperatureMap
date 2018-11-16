@@ -1,11 +1,10 @@
 package sensor;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 
-import jssc.SerialNativeInterface;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -18,39 +17,64 @@ import jssc.SerialPortException;
  *
  */
 
-public class RealSensor {
+public class RealSensor extends Sensor {
 
-	static SerialPort port = new SerialPort("COM8");
+	double temp;
+	String dateTime;
+	SerialPort port;
 	
-	public RealSensor() {
+	public RealSensor(double latitude, double longitude) {
+		super(latitude, longitude, false);
 		
-		
-	}
-	
-	public static void main(String[] args) {
+		port = new SerialPort("COM4");
 		
 		try {
 			port.openPort();
 			port.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-			port.addEventListener(new PortReader(port), SerialPort.MASK_RXCHAR);
+			port.addEventListener(new PortReader(port, this), SerialPort.MASK_RXCHAR);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
 		
-		while(true) {
-			
+	}
+	
+	protected synchronized void setTemp(double temp) {
+		this.temp = temp;
+	}
+	
+	protected synchronized void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
+	}
+	
+	public synchronized double getTemp() {
+		return temp;
+	}
+	
+	public synchronized String getDateTime() {
+		return dateTime;
+	}
+	
+	@Override
+	public void close() {
+		try {
+			port.closePort();
+		} catch (SerialPortException e) {
+			e.printStackTrace();
 		}
 	}
+	
 }
 
 class PortReader implements SerialPortEventListener {
 	
 	SerialPort port;
+	RealSensor sensor;
 	String receivedData = "";
 	StringBuffer sb = new StringBuffer();
 	
-	public PortReader(SerialPort port) {
+	public PortReader(SerialPort port, RealSensor sensor) {
 		this.port = port;
+		this.sensor = sensor;
 	}
 	
 	@Override
@@ -58,18 +82,21 @@ class PortReader implements SerialPortEventListener {
         if(event.isRXCHAR() && event.getEventValue() > 0) {
             try {
             	
-            	// reply format: Temperature: xx.x°C\n\r
+            	// reply format: "Temperature: xx.x°C\n\r"
             	
             	sb.append(port.readString(event.getEventValue()));
-                //System.out.println("Received response: " + receivedData);
                 if(sb.toString().contains("\n\r")) {
                 	int index = sb.indexOf("\n\r");
                 	String first = sb.substring(0, index);
                 	String second = sb.substring(index + 2);
-                	System.out.println("Received response: " + first);
                 	sb = new StringBuffer(second);
                 	
-                	//TODO: get temperature out of reply
+                	// get temperature out of reply
+                	index = first.indexOf(" ");
+                	String temp = first.substring(index + 1, first.length()-2);
+                	// set temperature and it's time
+                	sensor.setTemp(Double.parseDouble(temp));
+                	sensor.setDateTime(Instant.now().toString());
                 }
                
             }

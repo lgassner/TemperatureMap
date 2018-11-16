@@ -21,7 +21,6 @@ public class DBConnection implements Runnable {
 	private String latitude;
 	private String longitude;
 	private boolean stop = false;
-	private boolean simulated;
 	private JTextField valueField;
 	private JTextField timeField;
 	private JTextArea textArea;
@@ -34,7 +33,6 @@ public class DBConnection implements Runnable {
 	public DBConnection(String latitude, String longitude, boolean simulated,JTextField valueField, JTextField timeField, JTextArea textArea) {
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.simulated = simulated;
 		this.textArea = textArea;
 		this.valueField = valueField;
 		this.timeField = timeField;		
@@ -42,8 +40,7 @@ public class DBConnection implements Runnable {
 		if(simulated) {
 			sensor = new VirtualSensor(Double.parseDouble(latitude),Double.parseDouble(longitude),0); 
 		} else {
-			// TODO: use real sensor
-			sensor = null;
+			sensor = new RealSensor(Double.parseDouble(latitude),Double.parseDouble(longitude));
 		}
 	}
 
@@ -74,22 +71,22 @@ public class DBConnection implements Runnable {
 
 			URL url = null;
 			try {
-				url = new URL(localhost);
+				//url = new URL(localhost);
 				//TODO: use real URL
-				//url = new URL(realURL);
+				url = new URL(realURL);
 			} catch (MalformedURLException e) {
 				textArea.setText(e.getMessage());
 			}
 			
 			// use for localhost
-			HttpURLConnection con = null;
+			//HttpURLConnection con = null;
 			// use for real URL
-			// HttpsURLConnection con = null;
+			 HttpsURLConnection con = null;
 			try {
 				// use for localhost
-				con = (HttpURLConnection) url.openConnection();
+				//con = (HttpURLConnection) url.openConnection();
 				// use for real URL
-				// con = (HttpsURLConnection) url.openConnection();
+				 con = (HttpsURLConnection) url.openConnection();
 			} catch (IOException e) {
 				textArea.setText(e.getMessage());
 			}
@@ -120,6 +117,7 @@ public class DBConnection implements Runnable {
 
 	public void setStop() {
 		stop = true;
+		sensor.close();
 	}
 	
 	

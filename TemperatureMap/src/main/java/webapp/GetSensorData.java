@@ -58,11 +58,11 @@ public class GetSensorData extends HttpServlet {
 		string += ",";
 		string += "{\"label\":\"instant temp\", \"type\": \"number\"}";
 		string += ",";
-		string += "{\"label\":\"average temp hour\", \"type\": \"number\"}";
+		string += "{\"label\":\"avg temp hour\", \"type\": \"number\"}";
 		string += ",";
-		string += "{\"label\":\"average temp day\", \"type\": \"number\"}";
+		string += "{\"label\":\"avg temp day\", \"type\": \"number\"}";
 		string += ",";
-		string += "{\"label\":\"average temp week\", \"type\": \"number\"}";
+		string += "{\"label\":\"avg temp week\", \"type\": \"number\"}";
 		
 		string += "],";
 		

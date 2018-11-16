@@ -20,7 +20,7 @@
     <div id="map"></div>
     <!-- Below elements are invisible on the main page but are used as infowindow or button -->
     <div id="infowindow">
-    		<div id="curve_chart" style="width: 800px; height: 200px"></div>
+    		<div id="curve_chart" style="width: 800px; height: 300px"></div>
     	<p>
     		<a id="csv_single" href=""></a>
     	</p>
@@ -48,7 +48,7 @@ function initMap() {
 	var options = {
 			title: 'Temperature of sensor: ' + sensorID,
 			curveType: 'function',
-			vAxis: {title: 'Temperature [°]'},
+			vAxis: {title: 'Temperature [C]'},
 			hAxis: {title: 'Date & Time'},
 			legend: { position: 'bottom' }
 	};
